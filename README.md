@@ -8,3 +8,5 @@
 Specification[5]: pastevents <br>
     History will be stored in history.txt file <br>
     ; separated commands will be stored separately. echo "Hello" ; echo "World" will add 2 entries to the history - echo "Hello" and echo "World"
+Specification[7]:
+Run on linux. /proc files will be used for this

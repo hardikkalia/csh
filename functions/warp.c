@@ -1,13 +1,16 @@
 #include "../headers.h"
-void warp(char* command){
-    char* arg=strtok(command," \n");
+void warp(char* command,redirect io_info){
+    char* temp=malloc(strlen(command)+1);
+    strcpy(temp,command);
+    char* arg=strtok(temp," \n");
     arg=strtok(NULL," \n");
     char directory[PATH_SIZE];
     if(arg==NULL){
         getcwd(WARP_PREV,2048);
         chdir(HOME_DIR);
         getcwd(directory,2048);
-        printf("%s\n",directory);
+        snprintf(PRINT_BUFFER,sizeof(directory),"%s\n",directory);
+        print(io_info);
     }
 
     while(arg!=NULL){
@@ -18,7 +21,7 @@ void warp(char* command){
             }
             else{
                     if(strlen(WARP_PREV)==0){
-                        fprintf(stderr,"ERROR: OLDPWD not set\n");
+                        fprintf(stderr,RED"ERROR: " RESET"OLDPWD not set\n");
                     }
                     else{
                         char* temp=malloc(sizeof(char)*strlen(WARP_PREV));
@@ -37,7 +40,9 @@ void warp(char* command){
             chdir(home);
         }
         getcwd(directory,2048);
-        printf("%s\n",directory);
+        snprintf(PRINT_BUFFER,sizeof(directory),"%s\n",directory);
+        print(io_info);
+        return;
         arg=strtok(NULL," \n");
     }
 }

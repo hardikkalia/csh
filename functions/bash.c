@@ -1,8 +1,8 @@
 #include "../headers.h"
-void run_bash(char* command,enum ptype type){
+void run_bash(char* command,enum ptype type,redirect io_info){
        int id=fork();
             if(id==0){
-                 char *args[] = { "/bin/bash", "-c", command, NULL};
+            char *args[] = { "/bin/bash", "-c", command, NULL};
              if(execvp(args[0], args)==-1){
                 perror(command);
              }
@@ -14,18 +14,20 @@ void run_bash(char* command,enum ptype type){
                 }
                 else if(type==BG){
                     printf("%d\n",id);
-                    BGEnque(strtok(command," \n"),id);
+                    BG_QUE->Enque(strtok(command," \n"),id);
                 }
         }
 }
 
 
-
-BGQue InitBGQue(){
-    BGQue Q=malloc(sizeof(BGQueElems));
-    Q->Front=NULL;
-    Q->Rear=NULL;
-    return Q;
+void InitBGQue(){
+    BG_QUE=malloc(sizeof(stBGQue));
+    BG_QUE->Front=NULL;
+    BG_QUE->Rear=NULL;
+    BG_QUE->Deque=BGDeque;
+    BG_QUE->Enque=BGEnque;
+    BG_QUE->Create_Elem=Create_BGElem;
+    BG_QUE->print=printBG;
 }
 
 BGQueElems* Create_BGElem(char* command,pid_t pid){
@@ -38,8 +40,7 @@ BGQueElems* Create_BGElem(char* command,pid_t pid){
 }
 
 void BGEnque(char* command,pid_t pid){
-   
-    BGQueElems* Elem=Create_BGElem(command,pid);
+    BGQueElems* Elem=BG_QUE->Create_Elem(command,pid);
     if(BG_QUE->Front==NULL){
         BG_QUE->Front=Elem;
         BG_QUE->Rear=Elem;
@@ -65,3 +66,24 @@ BGQueElems* BGDeque(){
     }
 }
 
+void printBG(){
+    if(BG_QUE->Front==NULL)
+        return;
+      BGQueElems* temp=BG_QUE->Rear;
+        while(1){
+            BGQueElems* E=BG_QUE->Deque();
+            int status;
+            int result=waitpid(E->pid,&status,WNOHANG);
+            if(result==-1)
+                perror("waitpid");
+            else if (result==0){
+                BG_QUE->Enque(E->command,E->pid);
+            }
+            else{
+                printf("%s has ended normally(%d)\n",E->command,E->pid);
+            }
+            if(temp==E)
+                break;
+            free(E);
+        }
+}

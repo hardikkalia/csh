@@ -15,6 +15,9 @@
 #include "./functions/seek.h"
 #include "./functions/bash.h"
 #include "./utils/initialization.h"
+#include "./utils/iohandler.h"
+#include "./functions/activities.h"
+#include "./functions/iMan.h"
 
 #include "extra/colour.h"
 #include <dirent.h>
@@ -28,4 +31,6 @@
 #include <sys/stat.h>
 #include <time.h>
 #include <grp.h>
+#include <netdb.h>
+#include <sys/socket.h>
 #endif

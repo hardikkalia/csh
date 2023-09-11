@@ -21,24 +21,6 @@ void prompt() {
     else{
         strcpy(dir,cur_dir);
     }
-    if(BG_QUE->Front!=NULL){
-        BGQueElems* temp=BG_QUE->Rear;
-        while(1){
-            BGQueElems* E=BGDeque();
-            int status;
-            int result=waitpid(E->pid,&status,WNOHANG);
-            if(result==-1)
-                perror("waitpid");
-            else if (result==0){
-                BGEnque(E->command,E->pid);
-            }
-            else{
-                printf("%s has ended normally(%d)\n",E->command,E->pid);
-            }
-            if(temp==E)
-                break;
-            free(E);
-        }
-    }
+    BG_QUE->print();
     printf(CYAN "<%s@%s:%s>" RESET,username,systemname,dir);
 }

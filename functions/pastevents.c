@@ -42,14 +42,15 @@ void AddEvent(char* command){
     }
 }
 
-void pastevents_handler(char* command){
+void pastevents_handler(char* command,redirect io_info){
     char* temp=malloc(sizeof(char)*(strlen(command)+1));
     strcpy(temp,command);
     char* arg=strtok(temp," \n");
     arg=strtok(NULL," \n");
-    if(arg==NULL){
+    if(arg==NULL || arg[0]=='>'){
         free(temp);
         pastevents();
+        print(io_info);
     }
     else if(strncmp(arg,"purge",5)==0){
         free(temp);
@@ -108,7 +109,7 @@ void pastevents(){
         fprintf(stderr,RED"ERROR: "RESET "No pastevents\n");
     }
     while(E!=NULL){
-        printf("%s\n",E->command);
+        snprintf(PRINT_BUFFER+strlen(PRINT_BUFFER),PRINT_BUF_SIZE,"%s\n",E->command);
         E=E->Next;
     }
 }
@@ -139,6 +140,7 @@ void pastevents_execute(char* command_num){
         for(int i=0;i<EVENT_QUE->num_events-num;i++){
             E=E->Next;
         }
-        run_command(E->command,0);
+        redirect io_info=getredirect(E->command);
+        run_command(E->command,0,io_info);
     
 }

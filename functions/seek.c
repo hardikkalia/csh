@@ -23,7 +23,7 @@ int search(char* path,char* name,int d_flag,int e_flag,int f_flag,int depth){
         if(S_ISDIR(st.st_mode)){
             
             if(strcmp(entry->d_name,name)==0 && !f_flag){
-                printf(BLUE"%s\n"RESET,print_path);
+                snprintf(PRINT_BUFFER+strlen(PRINT_BUFFER),PRINT_BUF_SIZE,BLUE"%s\n"RESET,print_path);
                 strcpy(temp,print_path);
                 num++;num_dir++;
             }  
@@ -35,7 +35,7 @@ int search(char* path,char* name,int d_flag,int e_flag,int f_flag,int depth){
             strcpy(check,entry->d_name);
             check=strtok(check,".");
             if(strcmp(check,name)==0){
-                printf(GREEN"%s\n"RESET,print_path);
+                snprintf(PRINT_BUFFER+strlen(PRINT_BUFFER),PRINT_BUF_SIZE,GREEN"%s\n"RESET,print_path);
                 strcpy(temp,print_path);
                 num++;num_fil++;
             }  
@@ -58,14 +58,14 @@ int search(char* path,char* name,int d_flag,int e_flag,int f_flag,int depth){
                 while((c=fgetc(fptr))!=EOF)
                     putchar(c);
             }
-            printf("\n");
+            snprintf(PRINT_BUFFER+strlen(PRINT_BUFFER),PRINT_BUF_SIZE,"\n");
             fclose(fptr);
         }
     }
-    free(check);
+    // free(check);
     return num;
 }
-void seek(char* command){
+void seek(char* command,redirect io_info){
     char* arg=strtok(command," \n");
     arg=strtok(NULL," \n");
 
@@ -90,6 +90,7 @@ void seek(char* command){
     }
     if(arg==NULL){
         fprintf(stderr,RED"ERROR: " RESET"No name specified\n");
+        return;
     }
     if(d_flag==1 && f_flag==1){
         fprintf(stderr,RED"Invalid Flags!\n"RESET);
@@ -99,7 +100,12 @@ void seek(char* command){
     strcpy(name,arg);
     arg=strtok(NULL," \n");
     char path[PATH_SIZE];
-    if(arg==NULL){
+    if(io_info ->pipein==1){
+        strcpy(path,PRINT_BUFFER);
+        path[strlen(path)-1]='\0';
+        PRINT_BUFFER[0]='\0';
+    }
+    else if(arg==NULL || arg[0]=='>'){
         strcpy(path,".");
     }
     else if(strcmp(arg,"~")==0){
@@ -110,7 +116,7 @@ void seek(char* command){
     }
     int num=search(path,name,d_flag,e_flag,f_flag,0);
     if(num==0){
-        printf("No match found!\n");
+        snprintf(PRINT_BUFFER+strlen(PRINT_BUFFER),PRINT_BUF_SIZE,"No match found!\n");
     }
-
+    print(io_info);
 }

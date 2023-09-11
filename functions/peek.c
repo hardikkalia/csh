@@ -10,7 +10,7 @@
         return 0;
     }
 
-    void print_long(char* fname,struct stat* st,char* relative){
+    void print_long(char* fname,struct stat* st,char* relative,redirect io_info){
         struct passwd *pwd;
         struct group *grp;
         char date_string[80];
@@ -19,7 +19,8 @@
         grp = getgrgid(st->st_gid);
 
         strftime(date_string, sizeof(date_string), "%b %d %H:%M", localtime(&st->st_mtime));
-        printf("%c%c%c%c%c%c%c%c%c%c %2ld %s %s %6ld %s ",
+        snprintf(PRINT_BUFFER+strlen(PRINT_BUFFER),PRINT_BUF_SIZE,
+            "%c%c%c%c%c%c%c%c%c%c %2ld %s %s %6ld %s ",
             (S_ISDIR(st->st_mode)) ? 'd' : '-',
             (st->st_mode & S_IRUSR) ? 'r' : '-',
             (st->st_mode & S_IWUSR) ? 'w' : '-',
@@ -32,11 +33,11 @@
             (st->st_mode & S_IXOTH) ? 'x' : '-',
             (long)st->st_nlink, pwd->pw_name, grp->gr_name,
             (long)st->st_size, date_string);
-            printf("%s%s%s\n", S_ISDIR(st->st_mode) ? BLUE : (check_exec(fname) ? GREEN : RESET), relative, RESET);
+            snprintf(PRINT_BUFFER+strlen(PRINT_BUFFER),PRINT_BUF_SIZE,"%s%s%s\n", S_ISDIR(st->st_mode) ? BLUE : (check_exec(fname) ? GREEN : RESET), relative, RESET);
     }
 
 
-    void peek(char* str){
+    void peek(char* str,redirect io_info){
             int a_flag=0;
             int l_flag=0;
             char* temp=malloc(sizeof(char)*(strlen(str)+1));
@@ -61,55 +62,18 @@
     }
             // char* args=strtok(temp," \n");
             char path[PATH_SIZE];
+            if(io_info->pipein==1){
+                strcpy(path,PRINT_BUFFER);
+                path[strlen(path)-1]='\0';
+                PRINT_BUFFER[0]='\0';
+            }
             // args=strtok(NULL," \n");
-            if(arg==NULL){
+            else if(arg==NULL || arg[0]=='>'){
                 strcpy(path,".");
             }
             else{
                 strcpy(path,arg);
             }
-            // else{
-            //      strcpy(temp,str);
-            //      args=strtok(temp," \n");
-            //      args=strtok(NULL," \n");
-            //     if(args[0]!='-'){
-            //         strcpy(path,args);
-            //     }
-            //     else{
-            //         if(args[1]=='l'){
-            //             l_flag=1;
-            //         if(args[2]=='a')
-            //                 a_flag=1;
-            //         }
-            //         else if(args[1]=='a'){
-            //             a_flag=1;
-            //             if(args[2]=='l')
-            //                 l_flag=1;
-            //         }
-            //         else{
-            //             fprintf(stderr,RED "ERROR: " RESET "'%s' No such file or directory exists\n",args);
-            //             return;
-            //         }
-            //         args=strtok(NULL," \n");
-            //         if(args==NULL){
-            //             strcpy(path,".");
-            //         }
-            //         else if(args[0]!='-'){
-            //             strcpy(path,args);
-            //         }
-            //         else{
-            //             if(args[1]=='l')
-            //                 l_flag=1;
-            //             else
-            //                 a_flag=1;
-            //             args=strtok(NULL," \n");
-            //             if(args==NULL)
-            //                 strcpy(path,".");
-            //             else
-            //                 strcpy(path,args);
-            //         }
-            //     }
-            //  }
             if(strcmp(path,"~")==0){
                 strcpy(path,HOME_DIR);
             }
@@ -127,19 +91,35 @@
            struct stat st;
            if(l_flag!=0){
                 stat(path,&st);
-                printf("Total Block Size: %d\n",st.st_blksize);
+                snprintf(PRINT_BUFFER,PRINT_BUF_SIZE,"Total Block Size: %d\n",st.st_blksize);
            }
-           
            for(int i=0;i<n;i++) {
             if(!a_flag && namelist[i]->d_name[0]=='.')
                 continue;
+            if(!io_info->wrfile && !io_info->apfile){
+            if(check_exec(namelist[i]->d_name))
+                snprintf(PRINT_BUFFER+strlen(PRINT_BUFFER),PRINT_BUF_SIZE,GREEN);
+            else if(namelist[i]->d_type== DT_DIR)
+                snprintf(PRINT_BUFFER+strlen(PRINT_BUFFER),PRINT_BUF_SIZE,BLUE);
+            else
+                snprintf(PRINT_BUFFER+strlen(PRINT_BUFFER),PRINT_BUF_SIZE,RESET);
+            }
             if(l_flag==0){
-                if(check_exec(namelist[i]->d_name))
-                    printf(GREEN "%s\n" RESET,namelist[i]->d_name);
-                else if(namelist[i]->d_type== DT_DIR)
-                printf(BLUE "%s\n" RESET, namelist[i]->d_name);
-                else   
-                    printf("%s\n",namelist[i]->d_name);
+                // if(check_exec(namelist[i]->d_name)){
+                //     snprintf(PRINT_BUFFER+strlen(PRINT_BUFFER),PRINT_BUF_SIZE,GREEN "%s\n" RESET,namelist[i]->d_name);
+                //     // printf("%s",PRINT_BUFFER);
+                //     // print(io_info);
+                // }
+                // else if(namelist[i]->d_type== DT_DIR){
+                //     snprintf(PRINT_BUFFER+strlen(PRINT_BUFFER),PRINT_BUF_SIZE,BLUE "%s\n" RESET, namelist[i]->d_name);
+                //     // printf("%s",PRINT_BUFFER);
+                //     // print(io_info);
+                // }
+                // else{
+                    snprintf(PRINT_BUFFER+strlen(PRINT_BUFFER),PRINT_BUF_SIZE,"%s\n",namelist[i]->d_name);
+                //     printf("%d\n%s",i,PRINT_BUFFER);
+                //     print(io_info);
+                // }
                 free(namelist[i]);
             }
             else{
@@ -147,11 +127,13 @@
                 strcat(full_path,"/");
                 strcat(full_path,namelist[i]->d_name);
                 if (stat(full_path, &st) == 0) {   
-                    print_long(full_path, &st,namelist[i]->d_name);
+                    print_long(full_path, &st,namelist[i]->d_name,io_info);
                 }
                 free(namelist[i]);
             }
+            printf(RESET);
            }
+           print(io_info);
            free(namelist);
            free(temp);
     }

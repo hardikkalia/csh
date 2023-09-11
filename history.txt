@@ -1,1 +1,15 @@
-echo "hello"
+warp .. 
+peek ..
+warp .. 
+warp ..
+peek
+peek -l
+warp
+echo Hello
+echo Hello 
+echo "Lorem Ipsum" 
+echo "Lorem Ipsum"
+echo "Lorem Ipsum" 
+iMan mkdir
+mkdir iMan
+iMan mkdir

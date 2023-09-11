@@ -12,7 +12,7 @@ int convert_str_to_int(char* str){
     }
     return x;
 }
-void proclore(char* command){
+void proclore(char* command,redirect io_info){
     char* arg=strtok(command," /n");
     arg=strtok(NULL," \n");
     if(strtok(NULL," \n")!=NULL){
@@ -50,14 +50,14 @@ void proclore(char* command){
         strcpy(data[i],arg);
         arg=strtok(NULL," ");
     }
-    printf("pid : %d\n",pid);
-    printf("process Status : %s",data[2]);
+    snprintf(PRINT_BUFFER+strlen(PRINT_BUFFER),PRINT_BUF_SIZE,"pid : %d\n",pid);
+    snprintf(PRINT_BUFFER+strlen(PRINT_BUFFER),PRINT_BUF_SIZE,"process Status : %s",data[2]);
     if(strcmp(data[4],data[7])==0)
-        printf("+\n");
+        snprintf(PRINT_BUFFER+strlen(PRINT_BUFFER),PRINT_BUF_SIZE,"+\n");
     else
-        printf("\n");
-    printf("Process Group : %d\n",getpgid(pid));
-    printf("Virtual Memory : %s\n",data[22]);
+        snprintf(PRINT_BUFFER+strlen(PRINT_BUFFER),PRINT_BUF_SIZE,"\n");
+    snprintf(PRINT_BUFFER+strlen(PRINT_BUFFER),PRINT_BUF_SIZE,"Process Group : %d\n",getpgid(pid));
+    snprintf(PRINT_BUFFER+strlen(PRINT_BUFFER),PRINT_BUF_SIZE,"Virtual Memory : %s\n",data[22]);
     fclose(fptr);
     char* exeFile=malloc(22);
     snprintf(exeFile,22,"/proc/%d/exe",pid);
@@ -68,5 +68,5 @@ void proclore(char* command){
         return;
     }
     exePath[read]='\0';
-    printf("Executable Path : %s\n",exePath);
+    snprintf(PRINT_BUFFER+strlen(PRINT_BUFFER),PRINT_BUF_SIZE,"Executable Path : %s\n",exePath);
 }

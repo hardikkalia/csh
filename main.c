@@ -1,17 +1,12 @@
 #include "headers.h"
+char* PRINT_BUFFER=NULL;
 char* HOME_DIR=NULL;
 char* WARP_PREV=NULL;
 Events EVENT_QUE=NULL;
 char* historyFile=NULL;
-BGQue BG_QUE;
+BGQue BG_QUE=NULL;
 int main()
 {
-        // HOME_DIR=malloc(sizeof(char)*NAME_SIZE);
-        // WARP_PREV=malloc(sizeof(char)*PATH_SIZE);
-        // WARP_PREV[0]='\0';
-        // getcwd(HOME_DIR,128);
-        // EVENT_QUE=InitEventsQ();
-        // Create_history();
         initialize_shell();
     // Keep accepting commands
     while (1)

@@ -7,4 +7,5 @@ extern char* WARP_PREV;
 extern Events EVENT_QUE;
 extern char* historyFile;
 extern BGQue BG_QUE;
+extern char* PRINT_BUFFER;
 #endif

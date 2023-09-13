@@ -22,5 +22,15 @@ void prompt() {
         strcpy(dir,cur_dir);
     }
     BG_QUE->print();
-    printf(CYAN "<%s@%s:%s>" RESET,username,systemname,dir);
+    if(TIME->command==NULL){
+        printf(CYAN "<%s@%s:%s>" RESET,username,systemname,dir);
+    }
+    else{
+        printf(CYAN "<%s@%s:%s %s : %ds>" RESET,username,systemname,dir,TIME->command,*(TIME->time));
+        free(TIME->command);
+        TIME->command=NULL;
+        free(TIME->time);
+        TIME->time=NULL;
+    }
+
 }

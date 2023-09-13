@@ -18,8 +18,15 @@
 #include "./utils/iohandler.h"
 #include "./functions/activities.h"
 #include "./functions/iMan.h"
-
+#include "./functions/ping.h"
+#include "./functions/fg.h"
+#include "./functions/bg.h"
+#include "./utils/signal.h"
+#include "./utils/termination.h"
 #include "extra/colour.h"
+#include "./functions/neonate.h"
+
+
 #include <dirent.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -33,4 +40,10 @@
 #include <grp.h>
 #include <netdb.h>
 #include <sys/socket.h>
+#include <sys/wait.h>
+#include <signal.h>
+#include <time.h>
+#include <signal.h>
+#include <termios.h>
+#include <ctype.h>
 #endif

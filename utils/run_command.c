@@ -5,14 +5,12 @@ void sequential(char* str){
     commnd command;
     while(!IsEmpty(list)){
         command=deque(list);
-        // int id=fork();
-        // if(id==0){
-            // char* arg[]={command->command_name,NULL};
         char* temp=malloc(strlen(command->command_name)+1);
         strcpy(temp,command->command_name);
         char* rest=temp;
+
         char* arg=strtok_r(rest,"|",&rest);
-        if(strcmp(arg,command->command_name)==0){
+        if(!isCommand(arg) || strcmp(arg,command->command_name)==0){
             redirect io_info=getredirect(command->command_name);
             run_command(command->command_name,command->type,io_info);
         }
@@ -31,12 +29,6 @@ void sequential(char* str){
             io_info->pipeout=0;
             print(io_info);
         }
-        //     exit(0);
-        // }
-        // else{
-        //     if(command->type==FG)
-        //         waitpid(id,NULL,0);
-        //      }
     }
 }
 
@@ -60,9 +52,47 @@ void run_command(char* command,enum ptype type,redirect io_info){
         {proclore(command,io_info);}
     else if(strcmp("seek",function)==0)
         {seek(command,io_info);}
+    else if(strcmp("activities",function)==0)
+        {activities(io_info);}
     else if(strcmp("iMan",function)==0)
-        {iMan(command);}
+        {iMan(command,io_info);}
+    else if(strcmp("ping",function)==0)
+        {ping(command);}
+    else if(strcmp("fg",function)==0)
+        {fg(command);}
+    else if(strcmp("bg",function)==0)
+        {bg(command);}
+    else if(strcmp("neonate",function)==0)
+        {neonate(command);}
     else{
          run_bash(command,type,io_info);
     }
+}
+
+
+int isCommand(char* str){
+     if(strcmp("warp",str)==0)
+       return 1;
+    else if(strcmp("peek",str)==0)
+       return 1;
+    else if(strcmp("pastevents",str)==0)
+        return 1;
+    else if(strcmp("proclore",str)==0)
+        return 1;
+    else if(strcmp("seek",str)==0)
+       return 1;
+    else if(strcmp("activities",str)==0)
+       return 1;
+    else if(strcmp("iMan",str)==0)
+       return 1;
+    else if(strcmp("ping",str)==0)
+        return 1;
+    else if(strcmp("fg",str)==0)
+       return 1;
+    else if(strcmp("bg",str)==0)
+        return 1;
+    else if(strcmp("neonate",str)==0)
+       return 1;
+    else
+        return 0;
 }

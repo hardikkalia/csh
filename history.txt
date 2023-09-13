@@ -1,15 +1,15 @@
-warp .. 
-peek ..
-warp .. 
-warp ..
-peek
-peek -l
-warp
-echo Hello
-echo Hello 
-echo "Lorem Ipsum" 
-echo "Lorem Ipsum"
-echo "Lorem Ipsum" 
-iMan mkdir
-mkdir iMan
-iMan mkdir
+ cat < a.txt | wc | sed 's/ //g' | cat > b.txt
+echo Lorem Ipsum > a.txt
+cat < a.txt | wc | sed 's/ //g' | cat > b.txt
+cat b.txt
+iMan sleeeep
+peek 
+peek < a.txt
+warp .. > newfile.txt
+warp -
+peek < newfile.txt
+cat newfile.txt
+seek utils
+sleep 10
+iMan 
+sleep 30

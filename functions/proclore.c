@@ -12,16 +12,13 @@ int convert_str_to_int(char* str){
     }
     return x;
 }
+
 void proclore(char* command,redirect io_info){
     char* arg=strtok(command," /n");
     arg=strtok(NULL," \n");
-    if(strtok(NULL," \n")!=NULL){
-        fprintf(stderr,RED"ERROR: "RESET "Invalid argument for function proclore\n");
-        return;
-    }
     pid_t pid;
     
-    if(arg==NULL)
+    if(arg==NULL || arg[0]=='>' || arg[0]=='<')
         pid=getpid();
     else
         pid=convert_str_to_int(arg);
@@ -33,7 +30,7 @@ void proclore(char* command,redirect io_info){
     snprintf(procFile,22,"/proc/%d/stat",pid);
     FILE* fptr=fopen(procFile,"r");
     if(fptr==NULL){
-        fprintf(stderr,RED"ERROR:" RESET "Process does not exist\n");
+        fprintf(stderr,RED"ERROR: " RESET "Process does not exist\n");
         return;
     }
     char* info=NULL;
@@ -69,4 +66,5 @@ void proclore(char* command,redirect io_info){
     }
     exePath[read]='\0';
     snprintf(PRINT_BUFFER+strlen(PRINT_BUFFER),PRINT_BUF_SIZE,"Executable Path : %s\n",exePath);
+    print(io_info);
 }

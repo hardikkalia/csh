@@ -6,7 +6,7 @@ void print(redirect io_info){
             printf("%s",PRINT_BUFFER);
         }
         else if(io_info->wrfile!=NULL){
-             char* path=malloc(strlen(HOME_DIR)+2);
+             char* path=malloc(strlen(HOME_DIR)+2+strlen(io_info->wrfile));
 
             sprintf(path,"%s/%s",HOME_DIR,io_info->wrfile);
             int fd=open(path,O_CREAT | O_TRUNC | O_WRONLY ,0644);
@@ -19,7 +19,7 @@ void print(redirect io_info){
             return;
         }
         else{
-            char* path=malloc(strlen(HOME_DIR)+2);
+            char* path=malloc(strlen(HOME_DIR)+2+strlen(io_info->apfile));
 
             sprintf(path,"%s/%s",HOME_DIR,io_info->apfile);
             int fd=open(path,O_CREAT | O_APPEND | O_WRONLY ,0644);

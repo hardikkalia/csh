@@ -9,7 +9,7 @@ void warp(char* command,redirect io_info){
         getcwd(WARP_PREV,2048);
         chdir(HOME_DIR);
         getcwd(directory,2048);
-        snprintf(PRINT_BUFFER,sizeof(directory),"%s\n",directory);
+        snprintf(PRINT_BUFFER,PRINT_BUF_SIZE,"%s\n",directory);
         print(io_info);
     }
 
@@ -40,7 +40,7 @@ void warp(char* command,redirect io_info){
             chdir(home);
         }
         getcwd(directory,2048);
-        snprintf(PRINT_BUFFER,sizeof(directory),"%s\n",directory);
+        snprintf(PRINT_BUFFER,PRINT_BUF_SIZE,"%s\n",directory);
         print(io_info);
         return;
         arg=strtok(NULL," \n");

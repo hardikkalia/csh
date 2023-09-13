@@ -33,7 +33,7 @@
             (st->st_mode & S_IXOTH) ? 'x' : '-',
             (long)st->st_nlink, pwd->pw_name, grp->gr_name,
             (long)st->st_size, date_string);
-            snprintf(PRINT_BUFFER+strlen(PRINT_BUFFER),PRINT_BUF_SIZE,"%s%s%s\n", S_ISDIR(st->st_mode) ? BLUE : (check_exec(fname) ? GREEN : RESET), relative, RESET);
+            snprintf(PRINT_BUFFER+strlen(PRINT_BUFFER),PRINT_BUF_SIZE,"%s\n", relative);
     }
 
 
@@ -44,31 +44,44 @@
             strcpy(temp,str);
              char* arg=strtok(str," \n");
             arg=strtok(NULL," \n");
-    while(1){
-        if(arg==NULL || arg[0]!='-'){
-            break;
-        }
-        for(int i=1;i<strlen(arg);i++){
-        if(arg[i]=='a')
-            a_flag=1;
-        else if(arg[i]=='l')
-            l_flag=1;
-        else{
-            fprintf(stderr,RED "ERROR: "RESET"invalid flags\n");
-            return;
-        }
-    }
-        arg=strtok(NULL," \n");
-    }
-            // char* args=strtok(temp," \n");
+        while(1){
+            if(arg==NULL || arg[0]!='-'){
+                break;
+            }
+            for(int i=1;i<strlen(arg);i++){
+                if(arg[i]=='a')
+                    a_flag=1;
+                else if(arg[i]=='l')
+                    l_flag=1;
+                else{
+                    fprintf(stderr,RED "ERROR: "RESET"invalid flags\n");
+                    return;
+                }
+            }
+            arg=strtok(NULL," \n");
+            }
             char path[PATH_SIZE];
             if(io_info->pipein==1){
                 strcpy(path,PRINT_BUFFER);
                 path[strlen(path)-1]='\0';
                 PRINT_BUFFER[0]='\0';
             }
-            // args=strtok(NULL," \n");
-            else if(arg==NULL || arg[0]=='>'){
+            else if(io_info->rdfile!=NULL){
+                char* ppath=malloc(PATH_SIZE);
+                FILE* fptr=fopen(io_info->rdfile,"r");
+                if(fptr==NULL){
+                    perror("peek");
+                    return;
+                }
+                size_t size;
+                if(getline(&ppath,&size,fptr)==-1){
+                    perror("peek");
+                    return;
+                }
+                strcpy(path,ppath);
+                path[strlen(path)-1]='\0';
+            }
+            else if(arg==NULL || arg[0]=='>' || arg[0]=='<'){
                 strcpy(path,".");
             }
             else{
@@ -105,22 +118,8 @@
                 snprintf(PRINT_BUFFER+strlen(PRINT_BUFFER),PRINT_BUF_SIZE,RESET);
             }
             if(l_flag==0){
-                // if(check_exec(namelist[i]->d_name)){
-                //     snprintf(PRINT_BUFFER+strlen(PRINT_BUFFER),PRINT_BUF_SIZE,GREEN "%s\n" RESET,namelist[i]->d_name);
-                //     // printf("%s",PRINT_BUFFER);
-                //     // print(io_info);
-                // }
-                // else if(namelist[i]->d_type== DT_DIR){
-                //     snprintf(PRINT_BUFFER+strlen(PRINT_BUFFER),PRINT_BUF_SIZE,BLUE "%s\n" RESET, namelist[i]->d_name);
-                //     // printf("%s",PRINT_BUFFER);
-                //     // print(io_info);
-                // }
-                // else{
                     snprintf(PRINT_BUFFER+strlen(PRINT_BUFFER),PRINT_BUF_SIZE,"%s\n",namelist[i]->d_name);
-                //     printf("%d\n%s",i,PRINT_BUFFER);
-                //     print(io_info);
-                // }
-                free(namelist[i]);
+                    free(namelist[i]);
             }
             else{
                 strcpy(full_path,path);

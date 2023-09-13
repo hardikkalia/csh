@@ -43,9 +43,6 @@ int search(char* path,char* name,int d_flag,int e_flag,int f_flag,int depth){
     }
     if(num==1 && e_flag && depth==0){
         if(num_dir==1){
-            // char* command=malloc(sizeof(char)*(strlen(temp)+6));
-            // snprintf(command,PATH_SIZE,"warp %s",temp);
-            // warp(command);
             if(chdir(temp)==-1)
                 printf("Missing permissions for task!\n");
         }
@@ -55,16 +52,18 @@ int search(char* path,char* name,int d_flag,int e_flag,int f_flag,int depth){
                 printf("Missing permissions for task!\n");
             else{
                 int c;
-                while((c=fgetc(fptr))!=EOF)
-                    putchar(c);
+                while((c=fgetc(fptr))!=EOF){
+                    // putchar(c);
+                    snprintf(PRINT_BUFFER+strlen(PRINT_BUFFER),PRINT_BUF_SIZE,"%c",c);
+                }
             }
             snprintf(PRINT_BUFFER+strlen(PRINT_BUFFER),PRINT_BUF_SIZE,"\n");
             fclose(fptr);
         }
     }
-    // free(check);
     return num;
 }
+
 void seek(char* command,redirect io_info){
     char* arg=strtok(command," \n");
     arg=strtok(NULL," \n");
@@ -105,6 +104,21 @@ void seek(char* command,redirect io_info){
         path[strlen(path)-1]='\0';
         PRINT_BUFFER[0]='\0';
     }
+    else if(io_info->rdfile!=NULL){
+                char* ppath=malloc(PATH_SIZE);
+                FILE* fptr=fopen(io_info->rdfile,"r");
+                if(fptr==NULL){
+                    perror("peek");
+                    return;
+                }
+                size_t size;
+                if(getline(&ppath,&size,fptr)==-1){
+                    perror("peek");
+                    return;
+                }
+                strcpy(path,ppath);
+                path[strlen(path)-1]='\0';
+            }
     else if(arg==NULL || arg[0]=='>'){
         strcpy(path,".");
     }
